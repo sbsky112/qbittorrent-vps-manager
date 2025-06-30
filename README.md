@@ -72,7 +72,7 @@
 
 ### 1. 克隆项目
 ```bash
-git clone https://github.com/your-username/qbittorrent-vps-manager.git
+git clone https://github.com/sbsky112/qbittorrent-vps-manager.git
 cd qbittorrent-vps-manager
 ```
 
@@ -155,6 +155,50 @@ SESSION_SECRET=your-secret-key-here
    - **端口**: qBittorrent Web UI端口（默认8080）
    - **用户名**: qBittorrent Web UI用户名
    - **密码**: qBittorrent Web UI密码
+
+## 🐳 Docker部署详解
+
+### 快速启动
+```bash
+# 使用Docker Hub镜像（推荐）
+docker run -d \
+  --name qbt-vps-manager \
+  --restart unless-stopped \
+  -p 3001:3001 \
+  -v qbt-data:/app/data \
+  -v qbt-uploads:/app/uploads \
+  -v qbt-logs:/app/logs \
+  sbsky112/qbittorrent-vps-manager:latest
+```
+
+### Docker Compose部署
+```bash
+# 下载配置文件
+curl -O https://raw.githubusercontent.com/sbsky112/qbittorrent-vps-manager/main/docker-compose.yml
+
+# 启动服务
+docker-compose up -d
+
+# 查看日志
+docker-compose logs -f
+```
+
+### 从源码构建
+```bash
+# 克隆项目
+git clone https://github.com/sbsky112/qbittorrent-vps-manager.git
+cd qbittorrent-vps-manager
+
+# 快速构建测试
+chmod +x quick-docker-build.sh
+./quick-docker-build.sh
+
+# 或手动构建
+docker build -t qbittorrent-vps-manager:local .
+docker run -d -p 3001:3001 qbittorrent-vps-manager:local
+```
+
+📚 **详细Docker部署指南**: [DOCKER.md](DOCKER.md)
 
 ## 📖 使用指南
 
@@ -287,7 +331,7 @@ pm2 save
 
 ## 📝 更新日志
 
-### v1.0.0 (2024-12-30)
+### v1.0.0 (2025-7-1)
 - ✨ 初始版本发布
 - 🎉 支持多VPS管理
 - 📁 完整的种子管理功能
@@ -311,8 +355,8 @@ pm2 save
 如果你遇到问题或有建议，请：
 
 1. 查看[常见问题](docs/FAQ.md)
-2. 搜索[已有Issues](https://github.com/your-username/qbittorrent-vps-manager/issues)
-3. 创建[新Issue](https://github.com/your-username/qbittorrent-vps-manager/issues/new)
+2. 搜索[已有Issues](https://github.com/sbsky112/qbittorrent-vps-manager/issues)
+3. 创建[新Issue](https://github.com/sbsky112/qbittorrent-vps-manager/issues/new)
 
 ---
 
