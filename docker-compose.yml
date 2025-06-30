@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  qbittorrent-manager:
+    build: .
+    container_name: qbt-vps-manager
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - DB_PATH=/app/data/qbittorrent_manager.db
+      - UPLOAD_DIR=/app/uploads
+      - LOG_FILE=/app/logs/app.log
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    networks:
+      - qbt-network
+    healthcheck:
+      test: ["CMD", "node", "server/healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # 可选：添加Nginx反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: qbt-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - qbittorrent-manager
+    networks:
+      - qbt-network
+    profiles:
+      - with-nginx
+
+networks:
+  qbt-network:
+    driver: bridge
+
+volumes:
+  qbt-data:
+    driver: local
+  qbt-uploads:
+    driver: local
+  qbt-logs:
+    driver: local

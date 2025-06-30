@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>qBittorrent VPS 管理器 - 测试页面</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>qBittorrent VPS 管理器 - API 测试</h1>
+    
+    <div class="test-section">
+        <h2>1. 测试VPS状态API</h2>
+        <button onclick="testVPSStatus()">获取VPS状态</button>
+        <div id="vps-status-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. 测试种子列表API</h2>
+        <button onclick="testTorrents()">获取种子列表</button>
+        <div id="torrents-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. 测试种子操作API</h2>
+        <p>请先在上面获取种子列表，然后输入种子哈希值进行测试：</p>
+        <input type="text" id="torrent-hash" placeholder="输入种子哈希值" style="width: 300px; padding: 5px;">
+        <br><br>
+        <button onclick="testPauseTorrent()">暂停种子</button>
+        <button onclick="testResumeTorrent()">恢复种子</button>
+        <div id="torrent-action-result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001/api';
+        
+        async function testVPSStatus() {
+            const resultDiv = document.getElementById('vps-status-result');
+            try {
+                const response = await fetch(`${API_BASE}/vps/status`);
+                const data = await response.json();
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h4>✅ VPS状态获取成功</h4>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ VPS状态获取失败</h4>
+                        <p>错误: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        async function testTorrents() {
+            const resultDiv = document.getElementById('torrents-result');
+            try {
+                const response = await fetch(`${API_BASE}/torrents`);
+                const data = await response.json();
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h4>✅ 种子列表获取成功</h4>
+                        <p>找到 ${data.length} 个VPS，共 ${data.reduce((sum, vps) => sum + (vps.torrents?.length || 0), 0)} 个种子</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ 种子列表获取失败</h4>
+                        <p>错误: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        async function testPauseTorrent() {
+            const hash = document.getElementById('torrent-hash').value.trim();
+            const resultDiv = document.getElementById('torrent-action-result');
+            
+            if (!hash) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ 请输入种子哈希值</h4>
+                    </div>
+                `;
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/torrents/1/pause`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ hashes: [hash] })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ 种子暂停成功</h4>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ 种子暂停失败</h4>
+                            <p>错误: ${data.error || '未知错误'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ 种子暂停失败</h4>
+                        <p>错误: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        async function testResumeTorrent() {
+            const hash = document.getElementById('torrent-hash').value.trim();
+            const resultDiv = document.getElementById('torrent-action-result');
+            
+            if (!hash) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ 请输入种子哈希值</h4>
+                    </div>
+                `;
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/torrents/1/resume`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ hashes: [hash] })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ 种子恢复成功</h4>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ 种子恢复失败</h4>
+                            <p>错误: ${data.error || '未知错误'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ 种子恢复失败</h4>
+                        <p>错误: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // 页面加载时自动测试基本功能
+        window.onload = function() {
+            console.log('页面加载完成，开始自动测试...');
+            testVPSStatus();
+            setTimeout(testTorrents, 1000);
+        };
+    </script>
+</body>
+</html>

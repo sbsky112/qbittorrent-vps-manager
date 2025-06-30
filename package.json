@@ -1,0 +1,37 @@
+{
+  "name": "qbittorrent-vps-manager",
+  "version": "1.0.0",
+  "description": "Web-based manager for multiple VPS qBittorrent-nox instances",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "server:dev": "cd server && npm run dev",
+    "client:dev": "cd client && npm run dev",
+    "build": "node build.js",
+    "build:client": "cd client && npm run build",
+    "start": "cd server && npm start",
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "install:deps": "node install-deps.js",
+    "clean": "rm -rf node_modules server/node_modules client/node_modules client/dist",
+    "clean:win": "rmdir /s /q node_modules server\\node_modules client\\node_modules client\\dist",
+    "test:server": "cd server && npm test",
+    "test:client": "cd client && npm test",
+    "lint": "cd client && npm run lint",
+    "preview": "cd client && npm run preview",
+    "migrate:sqlite": "node migrate-to-sqlite.js"
+  },
+  "keywords": [
+    "qbittorrent",
+    "vps",
+    "torrent",
+    "management"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "sqlite3": "^5.1.7"
+  }
+}
