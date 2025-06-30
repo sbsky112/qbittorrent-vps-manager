@@ -72,7 +72,7 @@
 
 ### 1. 克隆项目
 ```bash
-git clone https://github.com/your-username/qbittorrent-vps-manager.git
+git clone https://github.com/sbsky112/qbittorrent-vps-manager.git
 cd qbittorrent-vps-manager
 ```
 
@@ -311,8 +311,8 @@ pm2 save
 如果你遇到问题或有建议，请：
 
 1. 查看[常见问题](docs/FAQ.md)
-2. 搜索[已有Issues](https://github.com/your-username/qbittorrent-vps-manager/issues)
-3. 创建[新Issue](https://github.com/your-username/qbittorrent-vps-manager/issues/new)
+2. 搜索[已有Issues](https://github.com/sbsky112/qbittorrent-vps-manager/issues)
+3. 创建[新Issue](https://github.com/sbsky112/qbittorrent-vps-manager/issues/new)
 
 ---
 
